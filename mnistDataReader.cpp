@@ -99,7 +99,7 @@ mnistDataReader::mnistDataReader(std::string dataFilePath, std::string labelsFil
     for(uint32_t iter = 0; iter < numImagesToRead; iter++)
     {
         inputDataFileStream.read(dataOutOfFile, m_rows*m_columns);
-        matrix<uint8_t> temp(reinterpret_cast<uint8_t**>(dataOutOfFile), m_rows * m_columns, 1);
+        matrix<uint8_t> temp(reinterpret_cast<uint8_t*>(dataOutOfFile), m_rows * m_columns, 1);
         m_images.push_back(temp);
     }
 

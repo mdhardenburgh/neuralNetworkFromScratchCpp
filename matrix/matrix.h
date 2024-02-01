@@ -17,9 +17,9 @@ template <class T> class matrix
         matrix(T* data, const uint32_t& rows, const uint32_t& columns);
         ~matrix();
 
-        T at(const uint32_t& index);
+        T at(const uint32_t& row, const uint32_t& column);
         void transpose();
-        //matrix add(matrix B);
+        matrix add(matrix B);
         //void scalarMultiply(matrix B);
         //void dotProduct(matrix B);
         //void crossProduct(matrix B);
@@ -73,9 +73,37 @@ template <class T> matrix<T>::~matrix()
     delete m_data;
 }
 
-template <class T> T matrix<T>::at(const uint32_t& index)
+template <class T> T matrix<T>::at(const uint32_t& row, const uint32_t& column)
 {
-    return m_data[index];
+    
+    if(row > m_rows)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": row is greater than number of rows in matrix!!!!"<<std::endl;
+        assert(false);
+    }
+    if(column > m_columns)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": column is greater than number of columns in matrix!!!!"<<std::endl;
+        assert(false);
+    }
+
+    /*
+     * 1 2 3 4 5
+     * 1 2 3 4 5
+     * 1 2 3 4 5
+     * matrix in memory looks like
+     * 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+     * 
+     * so if we want the value at row 1 (zero index) and column 2 (zero index)
+     * 
+     * That is position 7 in the matrix when it is flattened in memory.
+     * To get there, row + column doesn't work that results in 3. Row * column
+     * doesn't work, that results in 2. 
+     * 
+     * Row * m_columns + column = 1(5) + 2 = 7. The correct position
+     */
+    
+    return m_data[(row * m_columns) + column];
 }
 
 template <class T> void matrix<T>::transpose()
@@ -85,11 +113,13 @@ template <class T> void matrix<T>::transpose()
     uint32_t newRows = m_columns;
     uint32_t newColumns = m_rows;
 
+    //iIter is rows
     for(uint32_t iIter = 0; iIter < m_rows; iIter++)
     {
+        //jIter is columns
         for(uint32_t jIter = 0; jIter < m_columns; jIter++)
         {
-            m_data[iIter + (jIter * m_columns)] = temp[jIter + (iIter * m_rows)];
+            m_data[(jIter * newColumns) + iIter] = temp[(iIter * m_columns) + jIter];
         }       
     }
 
