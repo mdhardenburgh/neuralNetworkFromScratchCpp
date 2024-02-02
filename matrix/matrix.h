@@ -17,9 +17,14 @@ template <class T> class matrix
         matrix(T* data, const uint32_t& rows, const uint32_t& columns);
         ~matrix();
 
-        T at(const uint32_t& row, const uint32_t& column);
+        T at(const uint32_t& row, const uint32_t& column) const;
+        T at(const uint32_t& index) const;
         void transpose();
-        matrix add(matrix B);
+        uint32_t getNumRows() const;
+        uint32_t getNumColumns() const;
+        void add(const matrix& B);
+        void print();
+        void scalarMultiply(const T& scalar);
         //void scalarMultiply(matrix B);
         //void dotProduct(matrix B);
         //void crossProduct(matrix B);
@@ -70,10 +75,10 @@ template <class T> matrix<T>::matrix(T* data, const uint32_t& rows, const uint32
 
 template <class T> matrix<T>::~matrix()
 {
-    delete m_data;
+    //delete m_data;
 }
 
-template <class T> T matrix<T>::at(const uint32_t& row, const uint32_t& column)
+template <class T> T matrix<T>::at(const uint32_t& row, const uint32_t& column) const
 {
     
     if(row > m_rows)
@@ -106,6 +111,16 @@ template <class T> T matrix<T>::at(const uint32_t& row, const uint32_t& column)
     return m_data[(row * m_columns) + column];
 }
 
+template <class T> T matrix<T>::at(const uint32_t& index) const
+{
+    /**
+     * generally its pretty hard to visualize a 2D matrix flattened in memory,
+     * which is why the at(row, column) version of this function exists. Buuuut
+     * sometimes its better to access the 2D matrix in a flattened version. 
+    */
+    return m_data[index];
+}
+
 template <class T> void matrix<T>::transpose()
 {
     T* temp = m_data;
@@ -126,6 +141,57 @@ template <class T> void matrix<T>::transpose()
     m_rows = newRows;
     m_columns = newColumns;
     delete temp;
+}
+
+template <class T> uint32_t matrix<T>::getNumRows() const
+{
+    return m_rows;
+}
+template <class T> uint32_t matrix<T>::getNumColumns() const
+{
+    return m_columns;
+}
+
+template <class T> void matrix<T>::add(const matrix& B)
+{
+    if(m_rows != B.getNumRows())
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": rows of the matrices must be equal!!!!"<<std::endl;
+        assert(false);
+    }
+
+    if(m_columns != B.getNumColumns())
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": columns of the matrices must be equal!!!!"<<std::endl;
+        assert(false);
+    }
+
+    for(uint32_t iIter = 0; iIter < (m_rows * m_columns); iIter ++)
+    {
+        m_data[iIter] = m_data[iIter] + B.at(iIter);
+    }
+
+}
+
+template <class T> void matrix<T>::print()
+{
+    for(uint32_t iIter = 0; iIter < m_rows; iIter++)
+    {
+        for(uint32_t jIter = 0; jIter < m_columns; jIter ++)
+        {
+            std::cout<<at(iIter, jIter)<<" ";
+        }        
+        std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
+}
+
+template <class T> void matrix<T>::scalarMultiply(const T& scalar)
+{
+    for(uint32_t iIter = 0; iIter < (m_rows * m_columns); iIter ++)
+    {
+        m_data[iIter] = scalar * m_data[iIter];
+    }    
 }
 
 #endif //MATRIX_H
