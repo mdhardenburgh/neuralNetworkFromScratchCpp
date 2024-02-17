@@ -1,3 +1,6 @@
+#ifndef MNIST_DATA_READER_H
+#define MNIST_DATA_READER_H
+
 #include "matrix.h"
 
 #include <string>
@@ -27,3 +30,5 @@ class mnistDataReader
         uint32_t changeEndian(uint32_t input);
         uint32_t normalize(uint32_t input);
 };
+
+#endif //MNIST_DATA_READER_H
