@@ -38,7 +38,7 @@ TEST(matrixTest, test_transpose_function_square_matrix)
 
     //print out matrix after transpose
     std::cout<<"matrix after transpose"<<std::endl;
-    dutMatrix.print();
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rows; iIter++)
     {
@@ -72,23 +72,24 @@ TEST(matrixTest, test_transpose_function_not_square_matrix_wide_to_tall)
     };
     
     matrix<uint32_t> dut(testMatrix, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedResult(expected, rowsTransposed, columnsTransposed);
 
     //print out matrix before transpose
     std::cout<<"matrix before transpose"<<std::endl;
     dut.print();
 
-    dut.transpose();
+    result = matrix<uint32_t>::transpose(dut);
 
     //print out matrix after transpose
     std::cout<<"matrix after transpose"<<std::endl;
-    dut.print();
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rowsTransposed; iIter++)
     {
         for(uint32_t jIter = 0; jIter < columnsTransposed; jIter++)
         {
-            EXPECT_EQ(expectedResult.at(iIter, jIter), dut.at(iIter, jIter));
+            EXPECT_EQ(expectedResult.at(iIter, jIter), result.at(iIter, jIter));
         }
     }
 }
@@ -117,23 +118,24 @@ TEST(matrixTest, test_transpose_function_not_square_matrix_tall_to_wide)
     
     
     matrix<uint32_t> dut(dutMatrix, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedResult(expected, rowsTransposed, columnsTransposed);
 
     //print out matrix before transpose
     std::cout<<"matrix before transpose"<<std::endl;
     dut.print();
 
-    dut.transpose();
+    result = matrix<uint32_t>::transpose(dut);
 
     //print out matrix after transpose
     std::cout<<"matrix after transpose"<<std::endl;
-    dut.print();
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rowsTransposed; iIter++)
     {
         for(uint32_t jIter = 0; jIter < columnsTransposed; jIter++)
         {
-            EXPECT_EQ(expectedResult.at(iIter, jIter), dut.at(iIter, jIter));
+            EXPECT_EQ(expectedResult.at(iIter, jIter), result.at(iIter, jIter));
         }
     }
 }
