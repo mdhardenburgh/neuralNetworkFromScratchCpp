@@ -27,13 +27,14 @@ TEST(matrixTest, test_transpose_function_square_matrix)
     };
     
     matrix<uint32_t> dutMatrix(testMatrix, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedMatrix(expected, rows, columns);
 
     //print out matrix before transpose
     std::cout<<"matrix before transpose"<<std::endl;
     dutMatrix.print();
 
-    dutMatrix.transpose();
+    result = matrix<uint32_t>::transpose(dutMatrix);
 
     //print out matrix after transpose
     std::cout<<"matrix after transpose"<<std::endl;
@@ -43,7 +44,7 @@ TEST(matrixTest, test_transpose_function_square_matrix)
     {
         for(uint32_t jIter = 0; jIter < columns; jIter++)
         {
-            EXPECT_EQ(expectedMatrix.at(iIter,jIter), dutMatrix.at(iIter, jIter));
+            EXPECT_EQ(expectedMatrix.at(iIter,jIter), result.at(iIter, jIter));
         }
     }
 }
@@ -142,7 +143,7 @@ TEST(matrixTest, test_add_square_matrices)
     const uint32_t rows = 5;
     const uint32_t columns = 5;
     
-    uint32_t matrixA[rows * columns] 
+    uint32_t matrixA[rows * columns]
     {
         1, 2, 3, 4, 5, 
         1, 2, 3, 4, 5, 
@@ -171,6 +172,7 @@ TEST(matrixTest, test_add_square_matrices)
     
     matrix<uint32_t> dutA(matrixA, rows, columns);
     matrix<uint32_t> dutB(matrixB, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedDut(expectedResult, rows, columns);
 
     std::cout<<"dut matrix A"<<std::endl;
@@ -179,17 +181,17 @@ TEST(matrixTest, test_add_square_matrices)
     std::cout<<"dut matrix B"<<std::endl;
     dutB.print();
 
-    //Add Matrix B to A, A + B
-    dutA.add(dutB);
+    //Add A + B
+    result = matrix<uint32_t>::add(dutA, dutB);
 
-    std::cout<<"dut matrix A + B"<<std::endl;
-    dutA.print();
+    std::cout<<"result = A + B"<<std::endl;
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rows; iIter++)
     {
         for(uint32_t jIter = 0; jIter < columns; jIter++)
         {
-            EXPECT_EQ(expectedDut.at(iIter, jIter), dutA.at(iIter, jIter));
+            EXPECT_EQ(expectedDut.at(iIter, jIter), result.at(iIter, jIter));
         }
     }
 }
@@ -219,6 +221,7 @@ TEST(matrixTest, test_add_wide_matrices)
     
     matrix<uint32_t> dutA(matrixA, rows, columns);
     matrix<uint32_t> dutB(matrixB, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedDut(expectedResult, rows, columns);
 
     std::cout<<"dut matrix A"<<std::endl;
@@ -227,17 +230,17 @@ TEST(matrixTest, test_add_wide_matrices)
     std::cout<<"dut matrix B"<<std::endl;
     dutB.print();
 
-    //Add Matrix B to A, A + B
-    dutA.add(dutB);
+    // result = A + B
+    result = matrix<uint32_t>::add(dutA, dutB);
 
-    std::cout<<"dut matrix A + B"<<std::endl;
-    dutA.print();
+    std::cout<<"result = A + B"<<std::endl;
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rows; iIter++)
     {
         for(uint32_t jIter = 0; jIter < columns; jIter++)
         {
-            EXPECT_EQ(expectedDut.at(iIter, jIter), dutA.at(iIter, jIter));
+            EXPECT_EQ(expectedDut.at(iIter, jIter), result.at(iIter, jIter));
         }
     }
 }
@@ -276,6 +279,7 @@ TEST(matrixTest, test_add_tall_matrices)
     
     matrix<uint32_t> dutA(matrixA, rows, columns);
     matrix<uint32_t> dutB(matrixB, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedDut(expectedResult, rows, columns);
 
     std::cout<<"dut matrix A"<<std::endl;
@@ -284,17 +288,17 @@ TEST(matrixTest, test_add_tall_matrices)
     std::cout<<"dut matrix B"<<std::endl;
     dutB.print();
 
-    //Add Matrix B to A, A + B
-    dutA.add(dutB);
+    // Result = A + B
+    result = matrix<uint32_t>::add(dutA, dutB);
 
-    std::cout<<"dut matrix A + B"<<std::endl;
-    dutA.print();
+    std::cout<<"result = A + B"<<std::endl;
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rows; iIter++)
     {
         for(uint32_t jIter = 0; jIter < columns; jIter++)
         {
-            EXPECT_EQ(expectedDut.at(iIter, jIter), dutA.at(iIter, jIter));
+            EXPECT_EQ(expectedDut.at(iIter, jIter), result.at(iIter, jIter));
         }
     }
 }
@@ -324,6 +328,7 @@ TEST(matrixTest, test_scalar_multiply)
     };
     
     matrix<uint32_t> dutA(matrixA, rows, columns);
+    matrix<uint32_t> result;
     matrix<uint32_t> expectedDut(expectedResult, rows, columns);
 
     std::cout<<"dut matrix A"<<std::endl;
@@ -331,17 +336,17 @@ TEST(matrixTest, test_scalar_multiply)
 
     std::cout<<"scalar value: "<<scalar<<std::endl;
 
-    //Add Matrix B to A, A + B
-    dutA.scalarMultiply(scalar);
+    // Result = scalar*A
+    result = matrix<uint32_t>::scalarMultiply(dutA, scalar);
 
     std::cout<<"dut matrix scalar * A"<<std::endl;
-    dutA.print();
+    result.print();
 
     for(uint32_t iIter = 0; iIter < rows; iIter++)
     {
         for(uint32_t jIter = 0; jIter < columns; jIter++)
         {
-            EXPECT_EQ(expectedDut.at(iIter, jIter), dutA.at(iIter, jIter));
+            EXPECT_EQ(expectedDut.at(iIter, jIter), result.at(iIter, jIter));
         }
     }
 }
@@ -382,7 +387,8 @@ TEST(matrixTest, test_multiply_tall_with_wide_matrix)
     
     matrix<uint32_t> dutMatrixA(dutA, rowsA, columnsA);
     matrix<uint32_t> dutMatrixB(dutB, rowsB, columnsB);
-    matrix<uint32_t> resultMatrix(result, 5, 5);
+    matrix<uint32_t> resultMatrix;
+    matrix<uint32_t> expectedDut(result, 5, 5);
 
     //print out matrix before multiplication
     std::cout<<"matrixA before multiplication"<<std::endl;
@@ -390,19 +396,19 @@ TEST(matrixTest, test_multiply_tall_with_wide_matrix)
     std::cout<<"matrixB before multiplication"<<std::endl;
     dutMatrixB.print();
     std::cout<<"expected results"<<std::endl;
-    resultMatrix.print();
+    expectedDut.print();
 
-    dutMatrixA.matrixMultiplication(dutMatrixB);
+    resultMatrix = matrix<uint32_t>::matrixMultiplication(dutMatrixA, dutMatrixB);
 
     //print out matrix after multiplication
-    std::cout<<"matrixA after multiplication"<<std::endl;
-    dutMatrixA.print();
+    std::cout<<"result after multiplication"<<std::endl;
+    resultMatrix.print();
 
     for(uint32_t iIter = 0; iIter < 5; iIter++)
     {
         for(uint32_t jIter = 0; jIter < 5; jIter++)
         {
-            EXPECT_EQ(resultMatrix.at(iIter, jIter), dutMatrixA.at(iIter, jIter));
+            EXPECT_EQ(expectedDut.at(iIter, jIter), resultMatrix.at(iIter, jIter));
         }
     }
 }

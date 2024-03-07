@@ -6,6 +6,8 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
+#include <ctime>
+#include <cstdlib>
 
 
 // I suppose you could have a matrix of strings, but it would make no sense
@@ -14,18 +16,40 @@ template <class T> class matrix
     public:
         
         matrix();
+        matrix(const uint32_t& rows, const uint32_t& columns);
         matrix(T* data, const uint32_t& rows, const uint32_t& columns);
         ~matrix();
 
+        // Get position value at row, column
         T at(const uint32_t& row, const uint32_t& column) const;
         T at(const uint32_t& index) const;
-        void transpose();
+        // Set position value at row, column 
+        void assign(T value, const uint32_t& index);
+        void assign(T value, const uint32_t& row, const uint32_t& column);
+
+        /**
+          * @brief set the matrix to a new set of data
+          * 
+          * @param data pointer to set the matrix to. Must be same size as Matrix  
+          */
+        void set(T* data);
+        // fill matrix with 0s
+        void fillZeros();
+        //fill the matrix with specified number
+        void fillNumber(T value);
+        // fill with a random value
+        void fillRandom(T lowerEnd, T upperEnd);
         uint32_t getNumRows() const;
         uint32_t getNumColumns() const;
-        void add(const matrix& B);
+        static matrix<T> add(const matrix& A, const matrix& B);
+        static matrix<T> subtract(const matrix& A, const matrix& B);
+        static matrix<T> scalarMultiply(const matrix& A, const T& scalar);
+        //vector-vector product
+        static matrix<T> matrixMultiplication(const matrix& A, const matrix& B);
+        //component-wise product
+        static matrix<T> hadamardProduct(const matrix& A, const matrix& B);
+        static matrix<T> transpose(const matrix& A);
         void print();
-        void scalarMultiply(const T& scalar);
-        void matrixMultiplication(const matrix& B);
         //void dotProduct(matrix B);
         //void crossProduct(matrix B);
         //int32_t determinant();
@@ -43,21 +67,35 @@ template <class T> matrix<T>::matrix()
 
 }
 
-template <class T> matrix<T>::matrix(T* data, const uint32_t& rows, const uint32_t& columns)
+template <class T> matrix<T>::matrix(const uint32_t& rows, const uint32_t& columns)
 {
+    if(rows < 1)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": rows is less than 1!!!!"<<std::endl;
+        assert(false);
+    }
+    if(columns < 1)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": columns is less than 1!!!!"<<std::endl;
+        assert(false);
+    }
+
     m_rows = rows;
     m_columns = columns;
 
     m_data = new T[m_rows*m_columns];
+}
 
-    if(m_rows < 1)
+template <class T> matrix<T>::matrix(T* data, const uint32_t& rows, const uint32_t& columns)
+{
+    if(rows < 1)
     {
-        std::cout<<__PRETTY_FUNCTION__<<": m_rows is less than 1!!!!"<<std::endl;
+        std::cout<<__PRETTY_FUNCTION__<<": rows is less than 1!!!!"<<std::endl;
         assert(false);
     }
-    if(m_columns < 1)
+    if(columns < 1)
     {
-        std::cout<<__PRETTY_FUNCTION__<<": m_columns is less than 1!!!!"<<std::endl;
+        std::cout<<__PRETTY_FUNCTION__<<": columns is less than 1!!!!"<<std::endl;
         assert(false);
     }
     if(data == nullptr)
@@ -65,6 +103,12 @@ template <class T> matrix<T>::matrix(T* data, const uint32_t& rows, const uint32
         std::cout<<__PRETTY_FUNCTION__<<": data is nullptr!!!!"<<std::endl;
         assert(false);
     }
+
+    m_rows = rows;
+    m_columns = columns;
+
+
+    m_data = new T[m_rows*m_columns];
 
     for(uint32_t iIter = 0; iIter < m_rows * m_columns; iIter++)
     {
@@ -75,12 +119,74 @@ template <class T> matrix<T>::matrix(T* data, const uint32_t& rows, const uint32
 
 template <class T> matrix<T>::~matrix()
 {
-    //delete m_data;
+    if(m_data != nullptr)
+    {
+        //T* temp = m_data;
+        //delete[] temp;
+        //m_data = nullptr;
+    }
+}
+
+template <class T> void matrix<T>::set(T* data)
+{
+    if(data == nullptr)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": data is nullptr!!!!"<<std::endl;
+        assert(false);
+    }
+
+    if(m_data == nullptr)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": m_data is nullptr!!!!"<<std::endl;
+        assert(false);
+    }
+        
+    if(sizeof(data)/sizeof(T) == (m_rows*m_columns))
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": data is is not the right size!!!!"<<std::endl;
+        assert(false);
+    }
+
+
+    for(uint32_t iIter = 0; iIter < m_rows * m_columns; iIter++)
+    {
+        m_data[iIter] = data[iIter];
+    }
+}
+
+template <class T> void matrix<T>::fillZeros()
+{
+    for(uint32_t iIter = 0; iIter < m_rows * m_columns; iIter++)
+    {
+        m_data[iIter] = 0;
+    }
+}
+
+template <class T> void matrix<T>::fillNumber(T value)
+{
+    for(uint32_t iIter = 0; iIter < m_rows * m_columns; iIter++)
+    {
+        m_data[iIter] = value;
+    }
+}
+
+template <class T> void matrix<T>::fillRandom(T lowerBound, T upperBound)
+{
+    srand (static_cast <unsigned> (time(0)));
+    for(uint32_t iIter = 0; iIter < m_rows * m_columns; iIter++)
+    {
+        m_data[iIter] = lowerBound + static_cast<T>(rand()) / (static_cast<T>(RAND_MAX/(upperBound-lowerBound)));
+    }
 }
 
 template <class T> T matrix<T>::at(const uint32_t& row, const uint32_t& column) const
 {
     
+    if(m_data == nullptr)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": m_data is nullptr!!!!"<<std::endl;
+        assert(false);
+    }
     if(row > m_rows)
     {
         std::cout<<__PRETTY_FUNCTION__<<": row "<<row<<" is greater than number of rows "<<m_rows<<" in matrix!!!!"<<std::endl;
@@ -113,6 +219,17 @@ template <class T> T matrix<T>::at(const uint32_t& row, const uint32_t& column) 
 
 template <class T> T matrix<T>::at(const uint32_t& index) const
 {
+    if(m_data == nullptr)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": m_data is nullptr!!!!"<<std::endl;
+        assert(false);
+    }
+    if(index > (m_rows*m_columns))
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": index requested is greater than size of matrix!!!!"<<std::endl;
+        assert(false);
+    }
+    
     /**
      * generally its pretty hard to visualize a 2D matrix flattened in memory,
      * which is why the at(row, column) version of this function exists. Buuuut
@@ -121,46 +238,46 @@ template <class T> T matrix<T>::at(const uint32_t& index) const
     return m_data[index];
 }
 
-template <class T> void matrix<T>::transpose()
+template <class T> void matrix<T>::assign(T value, const uint32_t& index)
 {
-    T* temp = m_data;
-    m_data = new T[m_rows * m_columns];
-    uint32_t newRows = m_columns;
-    uint32_t newColumns = m_rows;
-
-    /* 3 X 5
-     * 3 rows, 5 columns
-     * 1 2 3 4 5
-     * 1 2 3 4 5
-     * 1 2 3 4 5
-     * matrix in memory looks like
-     * 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
-     * 
-     * 5 X 3
-     * 5 rows, 3 columns
-     * 1 1 1
-     * 2 2 2
-     * 3 3 3
-     * 4 4 4
-     * 5 5 5
-     * matrix in memory looks like
-     * 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5
-     */
-
-    
-    //iIter is rows
-    for(uint32_t iIter = 0; iIter < m_rows; iIter++)
+    if(m_data == nullptr)
     {
-        //jIter is columns
-        for(uint32_t jIter = 0; jIter < m_columns; jIter++)
-        {
-            m_data[(jIter * newColumns) + iIter] = temp[(iIter * m_columns) + jIter];
-        }       
+        std::cout<<__PRETTY_FUNCTION__<<": m_data is nullptr!!!!"<<std::endl;
+        assert(false);
+    }
+        if(index > (m_rows*m_columns))
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": index requested is greater than size of matrix!!!!"<<std::endl;
+        assert(false);
     }
 
-    m_rows = newRows;
-    m_columns = newColumns;
-    delete temp;
+    /**
+     * generally its pretty hard to visualize a 2D matrix flattened in memory,
+     * which is why the at(row, column) version of this function exists. Buuuut
+     * sometimes its better to access the 2D matrix in a flattened version. 
+    */
+    m_data[index] = value;
+}
+
+template <class T> void matrix<T>::assign(T value, const uint32_t& row, const uint32_t& column)
+{
+    if(m_data == nullptr)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": m_data is nullptr!!!!"<<std::endl;
+        assert(false);
+    }
+    if(row > m_rows)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": row "<<row<<" is greater than number of rows "<<m_rows<<" in matrix!!!!"<<std::endl;
+        assert(false);
+    }
+    if(column > m_columns)
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": column "<<column<<" is greater than number of columns "<<m_columns<<" in matrix!!!!"<<std::endl;
+        assert(false);
+    }
+    
+    m_data[(row * m_columns) + column] = value;
 }
 
 template <class T> uint32_t matrix<T>::getNumRows() const
@@ -172,25 +289,66 @@ template <class T> uint32_t matrix<T>::getNumColumns() const
     return m_columns;
 }
 
-template <class T> void matrix<T>::add(const matrix& B)
+template <class T> matrix<T> matrix<T>::add(const matrix& A, const matrix& B)
 {
-    if(m_rows != B.getNumRows())
+    if(A.getNumRows() != B.getNumRows())
     {
         std::cout<<__PRETTY_FUNCTION__<<": rows of the matrices must be equal!!!!"<<std::endl;
         assert(false);
     }
 
-    if(m_columns != B.getNumColumns())
+    if(A.getNumColumns() != B.getNumColumns())
     {
         std::cout<<__PRETTY_FUNCTION__<<": columns of the matrices must be equal!!!!"<<std::endl;
         assert(false);
     }
 
-    for(uint32_t iIter = 0; iIter < (m_rows * m_columns); iIter ++)
+    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
+    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+
+    std::cout<<"matrix C before the add"<<std::endl;
+    C.print();
+
+    for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
     {
-        m_data[iIter] = m_data[iIter] + B.at(iIter);
+        
+        C.assign(A.at(iIter) + B.at(iIter), iIter);
     }
 
+    delete[] tempArr;
+
+    return C;
+}
+
+template <class T> matrix<T> matrix<T>::subtract(const matrix& A, const matrix& B)
+{
+    if(A.getNumRows() != B.getNumRows())
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": rows of the matrices must be equal!!!!"<<std::endl;
+        assert(false);
+    }
+
+    if(A.getNumColumns() != B.getNumColumns())
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": columns of the matrices must be equal!!!!"<<std::endl;
+        assert(false);
+    }
+
+    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
+    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+
+    std::cout<<"matrix C before the add"<<std::endl;
+    C.print();
+
+    for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
+    {
+        
+        C.assign(A.at(iIter) - B.at(iIter), iIter);
+    }
+
+    delete[] tempArr;
+
+    return C;
 }
 
 template <class T> void matrix<T>::print()
@@ -206,26 +364,36 @@ template <class T> void matrix<T>::print()
     std::cout<<std::endl;
 }
 
-template <class T> void matrix<T>::scalarMultiply(const T& scalar)
+
+template <class T> matrix<T> matrix<T>::scalarMultiply(const matrix& A, const T& scalar)
 {
-    for(uint32_t iIter = 0; iIter < (m_rows * m_columns); iIter ++)
+    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
+    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+    
+    for(uint32_t iIter = 0; iIter < (A.getNumRows() * A.getNumRows()); iIter ++)
     {
-        m_data[iIter] = scalar * m_data[iIter];
-    }    
+        C.assign(scalar * A.at(iIter), iIter);
+    }
+
+    delete[] tempArr;
+
+    return C;
 }
 
-template <class T> void matrix<T>::matrixMultiplication(const matrix& B)
+
+template <class T> matrix<T> matrix<T>::matrixMultiplication(const matrix& A, const matrix& B)
 {
-    if(m_columns != B.getNumRows())
+    if(A.getNumColumns() != B.getNumRows())
     {
         std::cout<<__PRETTY_FUNCTION__<<": columns of A and rows of B must be equal!!!!"<<std::endl;
-        std::cout<<__PRETTY_FUNCTION__<<": columns of A are"<<m_columns<<std::endl;
+        std::cout<<__PRETTY_FUNCTION__<<": columns of A are"<<A.getNumColumns()<<std::endl;
         std::cout<<__PRETTY_FUNCTION__<<": rows of B are"<<B.getNumRows()<<std::endl;
 
         assert(false);
     }
 
-    T* result = new T[m_rows * B.getNumColumns()];
+    T* tempArr = new T[A.getNumRows() * B.getNumColumns()];
+    matrix<T> C(tempArr, A.getNumRows(), B.getNumColumns());
 
     /* 
      * matrix multiplication is always the sum of the rows of A times the columns of B
@@ -249,25 +417,88 @@ template <class T> void matrix<T>::matrixMultiplication(const matrix& B)
      * 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5
      */
 
-    for(uint32_t iIter = 0; iIter < m_rows; iIter++)
+    for(uint32_t iIter = 0; iIter < A.getNumRows(); iIter++)
     {
-        //rows of B
         for(uint32_t jIter = 0; jIter < B.getNumColumns(); jIter++)
         {
-            //columns of B
-            for(uint32_t kIter = 0; kIter < m_columns; kIter++)
+            for(uint32_t kIter = 0; kIter < A.getNumColumns(); kIter++)
             {
-                result[(iIter * B.getNumColumns()) + jIter] += at(iIter, kIter) * B.at(kIter, jIter);
+                //result[(iIter * B.getNumColumns()) + jIter] += A.at(iIter, kIter) * B.at(kIter, jIter);
+                C.assign(C.at((iIter * B.getNumColumns()) + jIter) + A.at(iIter, kIter) * B.at(kIter, jIter), (iIter * B.getNumColumns()) + jIter);
             }
         }
     }
-    //m_data[(row * m_columns) + column]
+    delete[] tempArr;
+    return C;
+}
 
-    m_columns = B.getNumColumns();
-    T* temp = m_data;
-    m_data = result;
-    delete temp;
+template <class T> matrix<T> matrix<T>::hadamardProduct(const matrix& A, const matrix& B)
+{
+    if(A.getNumRows() != B.getNumRows())
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": rows of the matrices must be equal!!!!"<<std::endl;
+        assert(false);
+    }
 
+    if(A.getNumColumns() != B.getNumColumns())
+    {
+        std::cout<<__PRETTY_FUNCTION__<<": columns of the matrices must be equal!!!!"<<std::endl;
+        assert(false);
+    }
+
+    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
+    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+
+    std::cout<<"matrix C before the hadamard"<<std::endl;
+    C.print();
+
+    for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
+    {
+        
+        C.assign(A.at(iIter) * B.at(iIter), iIter);
+    }
+
+    delete[] tempArr;
+
+    return C;
+}
+
+template <class T> matrix<T> matrix<T>::transpose(const matrix& A)
+{
+    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
+    matrix<T> C(tempArr, A.getNumColumns(), A.getNumRows());
+
+    /* 3 X 5
+     * 3 rows, 5 columns
+     * 1 2 3 4 5
+     * 1 2 3 4 5
+     * 1 2 3 4 5
+     * matrix in memory looks like
+     * 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+     * 
+     * 5 X 3
+     * 5 rows, 3 columns
+     * 1 1 1
+     * 2 2 2
+     * 3 3 3
+     * 4 4 4
+     * 5 5 5
+     * matrix in memory looks like
+     * 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5
+     */
+
+    //iIter is rows
+    for(uint32_t iIter = 0; iIter < A.getNumRows(); iIter++)
+    {
+        //jIter is columns
+        for(uint32_t jIter = 0; jIter < A.getNumColumns(); jIter++)
+        {
+            C.assign(A.at(iIter, jIter), jIter, iIter);
+        }       
+    }
+
+    delete[] tempArr;
+    return C;
 }
 
 #endif //MATRIX_H
