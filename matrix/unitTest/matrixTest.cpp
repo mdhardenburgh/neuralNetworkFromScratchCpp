@@ -339,7 +339,7 @@ TEST(matrixTest, test_scalar_multiply)
     std::cout<<"scalar value: "<<scalar<<std::endl;
 
     // Result = scalar*A
-    result = matrix<uint32_t>::scalarMultiply(dutA, scalar);
+    result = matrix<uint32_t>::scalarMultiply(scalar, dutA);
 
     std::cout<<"dut matrix scalar * A"<<std::endl;
     result.print();

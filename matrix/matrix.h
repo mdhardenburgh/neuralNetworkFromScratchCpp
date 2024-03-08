@@ -43,7 +43,7 @@ template <class T> class matrix
         uint32_t getNumColumns() const;
         static matrix<T> add(const matrix& A, const matrix& B);
         static matrix<T> subtract(const matrix& A, const matrix& B);
-        static matrix<T> scalarMultiply(const matrix& A, const T& scalar);
+        static matrix<T> scalarMultiply(const T& scalar, const matrix& A);
         //vector-vector product
         static matrix<T> matrixMultiplication(const matrix& A, const matrix& B);
         //component-wise product
@@ -306,9 +306,6 @@ template <class T> matrix<T> matrix<T>::add(const matrix& A, const matrix& B)
     T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
     matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
 
-    std::cout<<"matrix C before the add"<<std::endl;
-    C.print();
-
     for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
     {
         
@@ -337,9 +334,6 @@ template <class T> matrix<T> matrix<T>::subtract(const matrix& A, const matrix& 
     T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
     matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
 
-    std::cout<<"matrix C before the add"<<std::endl;
-    C.print();
-
     for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
     {
         
@@ -365,12 +359,12 @@ template <class T> void matrix<T>::print()
 }
 
 
-template <class T> matrix<T> matrix<T>::scalarMultiply(const matrix& A, const T& scalar)
+template <class T> matrix<T> matrix<T>::scalarMultiply(const T& scalar, const matrix& A)
 {
     T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
     matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
     
-    for(uint32_t iIter = 0; iIter < (A.getNumRows() * A.getNumRows()); iIter ++)
+    for(uint32_t iIter = 0; iIter < (A.getNumRows() * A.getNumColumns()); iIter ++)
     {
         C.assign(scalar * A.at(iIter), iIter);
     }
@@ -386,8 +380,8 @@ template <class T> matrix<T> matrix<T>::matrixMultiplication(const matrix& A, co
     if(A.getNumColumns() != B.getNumRows())
     {
         std::cout<<__PRETTY_FUNCTION__<<": columns of A and rows of B must be equal!!!!"<<std::endl;
-        std::cout<<__PRETTY_FUNCTION__<<": columns of A are"<<A.getNumColumns()<<std::endl;
-        std::cout<<__PRETTY_FUNCTION__<<": rows of B are"<<B.getNumRows()<<std::endl;
+        std::cout<<__PRETTY_FUNCTION__<<": columns of A are "<<A.getNumColumns()<<std::endl;
+        std::cout<<__PRETTY_FUNCTION__<<": rows of B are "<<B.getNumRows()<<std::endl;
 
         assert(false);
     }
@@ -448,9 +442,6 @@ template <class T> matrix<T> matrix<T>::hadamardProduct(const matrix& A, const m
 
     T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
     matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
-
-    std::cout<<"matrix C before the hadamard"<<std::endl;
-    C.print();
 
     for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
     {
