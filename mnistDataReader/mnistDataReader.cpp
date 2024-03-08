@@ -130,21 +130,21 @@ matrix<uint8_t> mnistDataReader::getImage(uint32_t index)
     return m_images.at(index);
 }
 
-matrix<_Float32> mnistDataReader::getImageLabel(uint32_t index)
+matrix<_Float64> mnistDataReader::getImageLabel(uint32_t index)
 {
     return m_labelsOneHot.at(index);
 }
 
 //Convert to onehot binary format
-matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
+matrix<_Float64> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
 {
-    _Float32* oneHotArray;
+    _Float64* oneHotArray;
     
     switch(labelAsNumber)
     {
         case 0:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 1, // 0
                 0, // 1
@@ -162,7 +162,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }  
         case 1:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0
                 1, // 1
@@ -180,7 +180,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 2:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -198,7 +198,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 3:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -216,7 +216,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 4:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -234,7 +234,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 5:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -252,7 +252,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 6:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -270,7 +270,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 7:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -288,7 +288,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 8:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -306,7 +306,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
         case 9:
         {
-            _Float32 tempArr[10] = 
+            _Float64 tempArr[10] = 
             {
                 0, // 0 
                 0, // 1
@@ -324,7 +324,7 @@ matrix<_Float32> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
         }
     }
 
-    matrix<_Float32> tempOneHotEncode(oneHotArray, 10, 1);
+    matrix<_Float64> tempOneHotEncode(oneHotArray, 10, 1);
 
     return tempOneHotEncode;
 }
@@ -362,12 +362,12 @@ uint32_t mnistDataReader::changeEndian(uint32_t input)
 
 uint32_t mnistDataReader::normalize(uint32_t input)
 {
-    _Float32 maxOfInput = 255.0; //max pixel value
-    _Float32 minOfInput = 0.0;
-    _Float32 maxOfOutput = 9.0;
-    _Float32 minOfOutput = 0.0;
+    _Float64 maxOfInput = 255.0; //max pixel value
+    _Float64 minOfInput = 0.0;
+    _Float64 maxOfOutput = 9.0;
+    _Float64 minOfOutput = 0.0;
 
-    int retval = (((_Float32)input - minOfInput)/(maxOfInput - minOfInput)) * ((maxOfOutput - minOfOutput)+ minOfOutput);
+    int retval = (((_Float64)input - minOfInput)/(maxOfInput - minOfInput)) * ((maxOfOutput - minOfOutput)+ minOfOutput);
 
     return static_cast<int>(retval);
 

@@ -16,7 +16,7 @@ class mnistDataReader
         ~mnistDataReader();
 
         matrix<uint8_t> getImage(uint32_t index);
-        matrix<_Float32> getImageLabel(uint32_t index);
+        matrix<_Float64> getImageLabel(uint32_t index);
         void printImage(uint32_t imageIndex);
 
     private:
@@ -27,13 +27,13 @@ class mnistDataReader
         uint32_t m_rows = 0; // number of pixels in each row
         uint32_t m_columns = 0; //number of pixels in each column;
         std::vector<matrix<uint8_t>> m_images;
-        std::vector<matrix<_Float32>> m_imagesFloats;
+        std::vector<matrix<_Float64>> m_imagesFloats;
         std::vector<uint32_t> m_labels;
-        std::vector<matrix<_Float32>> m_labelsOneHot;
+        std::vector<matrix<_Float64>> m_labelsOneHot;
 
         uint32_t changeEndian(uint32_t input);
         uint32_t normalize(uint32_t input);
-        matrix<_Float32> convertToOneHot(uint32_t labelAsNumber);
+        matrix<_Float64> convertToOneHot(uint32_t labelAsNumber);
 };
 
 #endif //MNIST_DATA_READER_H
