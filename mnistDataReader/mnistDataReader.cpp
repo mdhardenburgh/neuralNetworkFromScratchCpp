@@ -135,6 +135,11 @@ matrix<_Float64> mnistDataReader::getImageLabel(uint32_t index)
     return m_labelsOneHot.at(index);
 }
 
+uint32_t mnistDataReader::getUintLabel(uint32_t index)
+{
+    return m_labels.at(index);
+}
+
 //Convert to onehot binary format
 matrix<_Float64> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
 {
@@ -343,7 +348,7 @@ void mnistDataReader::printImage(uint32_t imageIndex)
             std::cout<<std::endl;
         }
 
-        std::cout<<normalize(temp.at(iIter, 0));
+        std::cout<<normalize(temp.at(iIter));
     
     }
     std::cout<<std::endl;

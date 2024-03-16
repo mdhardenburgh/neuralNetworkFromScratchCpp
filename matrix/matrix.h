@@ -18,6 +18,7 @@ template <class T> class matrix
         matrix();
         matrix(const uint32_t& rows, const uint32_t& columns);
         matrix(T* data, const uint32_t& rows, const uint32_t& columns);
+        matrix(const matrix& other); //Deep copy constructor
         ~matrix();
 
         // Get position value at row, column
@@ -50,6 +51,33 @@ template <class T> class matrix
         static matrix<T> hadamardProduct(const matrix& A, const matrix& B);
         static matrix<T> transpose(const matrix& A);
         void print();
+        matrix<T>& operator=(const matrix& other)
+        {
+            if (this != &other) // self-assignment guard
+            {
+                // Deallocate existing memory
+                if (m_data != nullptr)
+                {
+                    delete[] m_data;
+                    m_data = nullptr;
+                }
+
+                // Copy new data
+                m_rows = other.m_rows;
+                m_columns = other.m_columns;
+                m_data = new T[m_rows * m_columns];
+                
+                for (uint32_t i = 0; i < m_rows * m_columns; i++)
+                {
+                    m_data[i] = other.m_data[i];
+                }
+            }
+            else
+            {
+                printf("assigning to self");
+            }
+            return *this;
+        }
         //void dotProduct(matrix B);
         //void crossProduct(matrix B);
         //int32_t determinant();
@@ -58,13 +86,26 @@ template <class T> class matrix
 
         //pointer to an array
         T* m_data = nullptr;
-        uint32_t m_rows;
-        uint32_t m_columns;
+        uint32_t m_rows = 0;
+        uint32_t m_columns = 0;
 };
 
 template <class T> matrix<T>::matrix()
 {
+    m_data = new T[m_rows*m_columns];
+}
 
+//copy constructor
+template <class T> matrix<T>::matrix(const matrix& other)
+{
+    m_rows = other.m_rows;
+    m_columns = other.m_columns;
+    m_data = new T[m_rows * m_columns];
+
+    for (uint32_t i = 0; i < m_rows * m_columns; ++i)
+    {
+        m_data[i] = other.m_data[i];
+    }
 }
 
 template <class T> matrix<T>::matrix(const uint32_t& rows, const uint32_t& columns)
@@ -121,9 +162,8 @@ template <class T> matrix<T>::~matrix()
 {
     if(m_data != nullptr)
     {
-        //T* temp = m_data;
-        //delete[] temp;
-        //m_data = nullptr;
+        delete[] m_data;
+        m_data = nullptr;
     }
 }
 
@@ -147,6 +187,12 @@ template <class T> void matrix<T>::set(T* data)
         assert(false);
     }
 
+    if(m_data != nullptr)
+    {
+        delete[] m_data;
+    }
+
+    m_data = new T[m_rows * m_columns];
 
     for(uint32_t iIter = 0; iIter < m_rows * m_columns; iIter++)
     {
@@ -303,17 +349,13 @@ template <class T> matrix<T> matrix<T>::add(const matrix& A, const matrix& B)
         assert(false);
     }
 
-    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
-    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+    matrix<T> C(A.getNumRows(), A.getNumColumns());
 
     for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
     {
         
         C.assign(A.at(iIter) + B.at(iIter), iIter);
     }
-
-    delete[] tempArr;
-
     return C;
 }
 
@@ -331,17 +373,13 @@ template <class T> matrix<T> matrix<T>::subtract(const matrix& A, const matrix& 
         assert(false);
     }
 
-    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
-    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+    matrix<T> C(A.getNumRows(), A.getNumColumns());
 
     for(uint32_t iIter = 0; iIter < (A.getNumRows()*A.getNumColumns()); iIter ++)
     {
         
         C.assign(A.at(iIter) - B.at(iIter), iIter);
     }
-
-    delete[] tempArr;
-
     return C;
 }
 
@@ -361,15 +399,12 @@ template <class T> void matrix<T>::print()
 
 template <class T> matrix<T> matrix<T>::scalarMultiply(const T& scalar, const matrix& A)
 {
-    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
-    matrix<T> C(tempArr, A.getNumRows(), A.getNumColumns());
+    matrix<T> C(A.getNumRows(), A.getNumColumns());
     
     for(uint32_t iIter = 0; iIter < (A.getNumRows() * A.getNumColumns()); iIter ++)
     {
         C.assign(scalar * A.at(iIter), iIter);
     }
-
-    delete[] tempArr;
 
     return C;
 }
@@ -386,8 +421,7 @@ template <class T> matrix<T> matrix<T>::matrixMultiplication(const matrix& A, co
         assert(false);
     }
 
-    T* tempArr = new T[A.getNumRows() * B.getNumColumns()];
-    matrix<T> C(tempArr, A.getNumRows(), B.getNumColumns());
+    matrix<T> C(A.getNumRows(), B.getNumColumns());
 
     /* 
      * matrix multiplication is always the sum of the rows of A times the columns of B
@@ -415,14 +449,16 @@ template <class T> matrix<T> matrix<T>::matrixMultiplication(const matrix& A, co
     {
         for(uint32_t jIter = 0; jIter < B.getNumColumns(); jIter++)
         {
+            T value = 0.0f;
             for(uint32_t kIter = 0; kIter < A.getNumColumns(); kIter++)
             {
                 //result[(iIter * B.getNumColumns()) + jIter] += A.at(iIter, kIter) * B.at(kIter, jIter);
-                C.assign(C.at((iIter * B.getNumColumns()) + jIter) + A.at(iIter, kIter) * B.at(kIter, jIter), (iIter * B.getNumColumns()) + jIter);
+                //C.assign(C.at((iIter * B.getNumColumns()) + jIter) + A.at(iIter, kIter) * B.at(kIter, jIter), (iIter * B.getNumColumns()) + jIter);
+                value += A.at(iIter,kIter) * B.at(kIter, jIter);
             }
+            C.assign(value, iIter, jIter);
         }
     }
-    delete[] tempArr;
     return C;
 }
 
@@ -456,8 +492,7 @@ template <class T> matrix<T> matrix<T>::hadamardProduct(const matrix& A, const m
 
 template <class T> matrix<T> matrix<T>::transpose(const matrix& A)
 {
-    T* tempArr = new T[A.getNumRows()*A.getNumColumns()];
-    matrix<T> C(tempArr, A.getNumColumns(), A.getNumRows());
+    matrix<T> C(A.getNumColumns(), A.getNumRows());
 
     /* 3 X 5
      * 3 rows, 5 columns
@@ -488,7 +523,6 @@ template <class T> matrix<T> matrix<T>::transpose(const matrix& A)
         }       
     }
 
-    delete[] tempArr;
     return C;
 }
 

@@ -17,6 +17,7 @@ class mnistDataReader
 
         matrix<uint8_t> getImage(uint32_t index);
         matrix<_Float64> getImageLabel(uint32_t index);
+        uint32_t getUintLabel(uint32_t index);
         void printImage(uint32_t imageIndex);
 
     private:
