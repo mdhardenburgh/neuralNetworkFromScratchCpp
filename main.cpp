@@ -1,3 +1,21 @@
+/**
+ * Neural network from scratch 
+ * Copyright (C) 2024  Matthew Hardenburgh, matthew@hardenburgh.io
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 #include "mnistDataReader.h"
 #include "matrix.h"
 #include <iostream>
@@ -7,6 +25,12 @@
 #include <cstdlib>
 #include <chrono>
 
+/**
+ * @brief activate function for a neural network based on the sigmoid function
+ * @param weights matrix of weights for the current layer
+ * @param inputFromPrevLayer output of the activations from the previous layer
+ * @param biases matrix of baises for the current layer
+*/
 matrix<_Float64> activate(matrix<_Float64> weights, matrix<_Float64> inputFromPrevLayer, matrix<_Float64> biases)
 {
     matrix<_Float64> outputOfActivation = matrix<_Float64>::add(matrix<_Float64>::matrixMultiplication(weights, inputFromPrevLayer), biases);

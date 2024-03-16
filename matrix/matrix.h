@@ -1,3 +1,21 @@
+/**
+ * Matrix library. Provides a method of creating and calculating with matrices.
+ * Copyright (C) 2024  Matthew Hardenburgh, matthew@hardenburgh.io
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 #ifndef MATRIX_H
 #define MATRIX_H
 
@@ -14,43 +32,141 @@
 template <class T> class matrix
 {
     public:
-        
+        /**
+         * @brief creates an empty matrix
+        */
         matrix();
+        /**
+         * @brief creates an empty matrix of size rows by columns
+         * @param rows rows of the matrix
+         * @param columns columns of the matrix
+        */
         matrix(const uint32_t& rows, const uint32_t& columns);
+        /**
+         * @brief creates a matrix of size rows by columns filled with data
+         * @param data array containing your data
+         * @param rows rows of the matrix
+         * @param columns columns of the matrix
+        */
         matrix(T* data, const uint32_t& rows, const uint32_t& columns);
-        matrix(const matrix& other); //Deep copy constructor
+        /**
+         * @brief deep copy constructor
+         * @param other the matrix you are copying from
+        */
+        matrix(const matrix& other);
+        /**
+         * @brief deconstructor
+        */
         ~matrix();
 
-        // Get position value at row, column
+        /**
+         * @brief Get value at row, column
+         * @param row row position of the matrix
+         * @param column column position of the matrix
+         * @return data accessed at the row, column position
+        */
         T at(const uint32_t& row, const uint32_t& column) const;
+        /**
+         * @brief get value at specific index
+         * @param index Index of the matrix you want to retrieve the value from
+         * @return data accessed at the index of the matrix
+        */
         T at(const uint32_t& index) const;
-        // Set position value at row, column 
+        /**
+         * @brief Assign a value at a specific index in the matrix
+         * @param value value you want to assign
+         * @param index index of where you want to assign that value to
+        */
         void assign(T value, const uint32_t& index);
+        /**
+         * @brief Assign a value at a specific index in the matrix
+         * @param value value you want to assign
+         * @param row row position of where you want to assign that value to
+         * @param column column position of where you want to assign that value to
+        */
         void assign(T value, const uint32_t& row, const uint32_t& column);
 
         /**
           * @brief set the matrix to a new set of data
-          * 
           * @param data pointer to set the matrix to. Must be same size as Matrix  
           */
         void set(T* data);
-        // fill matrix with 0s
+        /**
+         * @brief fill matrix with 0s 
+        */
         void fillZeros();
-        //fill the matrix with specified number
+        /**
+         * @brief fill matrix with a specified value
+         * @param value value to fill each position in the matrix with
+        */
         void fillNumber(T value);
-        // fill with a random value
+        /**
+         * @brief fill the matrix with a random value between a given range
+         * @param lowerEnd lower end of a random value to fill the matrix with
+         * @param upperEnd upper end of a random value to fill the matrix with
+        */
         void fillRandom(T lowerEnd, T upperEnd);
+        /**
+         * @brief get the number of rows of the matrix
+         * @return the number of rows of the matrix
+        */
         uint32_t getNumRows() const;
+        /**
+         * @brief get the number of columns of the matrix
+         * @return the number of columns of the matrix
+        */
         uint32_t getNumColumns() const;
-        static matrix<T> add(const matrix& A, const matrix& B);
-        static matrix<T> subtract(const matrix& A, const matrix& B);
-        static matrix<T> scalarMultiply(const T& scalar, const matrix& A);
-        //vector-vector product
-        static matrix<T> matrixMultiplication(const matrix& A, const matrix& B);
-        //component-wise product
-        static matrix<T> hadamardProduct(const matrix& A, const matrix& B);
-        static matrix<T> transpose(const matrix& A);
+        /**
+         * @brief print the matrix out to std out
+        */
         void print();
+        /**
+         * @brief add two matrices together, C = A + B
+         * @param A matrix A
+         * @param B matrix B
+         * @return the resultant matrix of the addition, matrix C
+        */
+        static matrix<T> add(const matrix& A, const matrix& B);
+        /**
+         * @brief subtract two matrices together, C = A - B
+         * @param A matrix A
+         * @param B matrix B
+         * @return the resultant matrix of the subtraction, matrix C
+        */
+        static matrix<T> subtract(const matrix& A, const matrix& B);
+        /**
+         * @brief scalar multiplication of a matrix, C = s * A, where s is a scalar
+         * @param scalar scalar s
+         * @param A matrix A
+         * @return the resultant matrix of the scalar multiply, matrix C
+        */
+        static matrix<T> scalarMultiply(const T& scalar, const matrix& A);
+        /**
+         * @brief vector-vector product matrix multiplication of two matrices, C = A * B
+         * @param A matrix A
+         * @param B matrix B
+         * @return the resultant matrix of the matrix multiplication, matrix C
+        */
+        static matrix<T> matrixMultiplication(const matrix& A, const matrix& B);
+        /**
+         * @brief component-wise product of two matrices, C = A .* B
+         * @param A matrix A
+         * @param B matrix B
+         * @return the resultant matrix of the hadamard product, matrix C
+        */
+        static matrix<T> hadamardProduct(const matrix& A, const matrix& B);
+        /**
+         * @brief transpose the matrix, C = A^T
+         * @details rows become columns, columns become rows
+         * @param A matrix A
+         * @return the resultant matrix of the transpose, matrix C
+        */
+        static matrix<T> transpose(const matrix& A);
+        /**
+         * @brief override of the equals operator
+         * @param other the matrix you are assigning from
+         * @return the matrix you are assigning to
+        */
         matrix<T>& operator=(const matrix& other)
         {
             if (this != &other) // self-assignment guard
@@ -78,9 +194,6 @@ template <class T> class matrix
             }
             return *this;
         }
-        //void dotProduct(matrix B);
-        //void crossProduct(matrix B);
-        //int32_t determinant();
 
     private:
 
