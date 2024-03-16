@@ -17,7 +17,9 @@ mnistDataReader::mnistDataReader(std::string dataFilePath, std::string labelsFil
     char* dataOutOfFile = new char[m_sizeOfUint32];
     char* labelsOutOfFile = new char[m_sizeOfUint32];
 
+    //Open pixel data file stream 
     std::ifstream inputDataFileStream(dataFilePath.c_str(), std::ios::in | std::ios::binary);
+    //Open label data file stream
     std::ifstream inputLabelFileStream(labelsFilePath.c_str(), std::ios::in | std::ios::binary);
 
     uint32_t sizeOfDataFile = 0;
@@ -112,6 +114,7 @@ mnistDataReader::mnistDataReader(std::string dataFilePath, std::string labelsFil
     for(uint32_t iIter = 0; iIter < sizeOfLabelFile; iIter++)
     {
         m_labels.push_back(static_cast<uint32_t>(labelsOutOfFile[iIter]));
+        m_labelsOneHot.push_back(convertToOneHot(m_labels[iIter]));
     }
     inputLabelFileStream.close();
     delete labelsOutOfFile;
@@ -120,6 +123,215 @@ mnistDataReader::mnistDataReader(std::string dataFilePath, std::string labelsFil
 mnistDataReader::~mnistDataReader()
 {
 
+}
+
+matrix<uint8_t> mnistDataReader::getImage(uint32_t index)
+{
+    return m_images.at(index);
+}
+
+matrix<_Float64> mnistDataReader::getImageLabel(uint32_t index)
+{
+    return m_labelsOneHot.at(index);
+}
+
+uint32_t mnistDataReader::getUintLabel(uint32_t index)
+{
+    return m_labels.at(index);
+}
+
+//Convert to onehot binary format
+matrix<_Float64> mnistDataReader::convertToOneHot(uint32_t labelAsNumber)
+{
+    _Float64* oneHotArray;
+    
+    switch(labelAsNumber)
+    {
+        case 0:
+        {
+            _Float64 tempArr[10] = 
+            {
+                1, // 0
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }  
+        case 1:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0
+                1, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 2:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                1, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 3:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                1, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 4:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                0, // 3
+                1, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 5:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                1, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 6:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                1, // 6
+                0, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 7:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                1, // 7
+                0, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 8:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                1, // 8
+                0  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+        case 9:
+        {
+            _Float64 tempArr[10] = 
+            {
+                0, // 0 
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                0, // 5
+                0, // 6
+                0, // 7
+                0, // 8
+                1  // 9
+            };
+            oneHotArray = tempArr;
+            break;
+        }
+    }
+
+    matrix<_Float64> tempOneHotEncode(oneHotArray, 10, 1);
+
+    return tempOneHotEncode;
 }
 
 // if you want to know it worked or not
@@ -136,7 +348,7 @@ void mnistDataReader::printImage(uint32_t imageIndex)
             std::cout<<std::endl;
         }
 
-        std::cout<<normalize(temp.at(iIter, 0));
+        std::cout<<normalize(temp.at(iIter));
     
     }
     std::cout<<std::endl;
@@ -155,12 +367,12 @@ uint32_t mnistDataReader::changeEndian(uint32_t input)
 
 uint32_t mnistDataReader::normalize(uint32_t input)
 {
-    _Float32 maxOfInput = 255.0; //max pixel value
-    _Float32 minOfInput = 0.0;
-    _Float32 maxOfOutput = 9.0;
-    _Float32 minOfOutput = 0.0;
+    _Float64 maxOfInput = 255.0; //max pixel value
+    _Float64 minOfInput = 0.0;
+    _Float64 maxOfOutput = 9.0;
+    _Float64 minOfOutput = 0.0;
 
-    int retval = (((_Float32)input - minOfInput)/(maxOfInput - minOfInput)) * ((maxOfOutput - minOfOutput)+ minOfOutput);
+    int retval = (((_Float64)input - minOfInput)/(maxOfInput - minOfInput)) * ((maxOfOutput - minOfOutput)+ minOfOutput);
 
     return static_cast<int>(retval);
 
